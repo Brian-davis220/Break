@@ -3,6 +3,10 @@ const express = require('express');
 const cors = require('cors');
 const morgan = require('morgan');
 const path = require('path');
+const http = require("http");
+const { neon } = require("@neondatabase/serverless");
+
+const sql = neon(process.env.DATABASE_URL);
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -62,7 +66,13 @@ app.use((err, req, res, next) => {
     });
 });
 
-app.listen(PORT, () => {
-    console.log(`\n🚀 Server is soaring at http://localhost:${PORT}`);
-    console.log(`📁 Environment: ${process.env.NODE_ENV}\n`);
-});
+// Conditional server start for testing
+if (require.main === module) {
+    app.listen(PORT, () => {
+        console.log(`🚀 Server is soaring at http://localhost:${PORT}`);
+        console.log(`📁 Environment: ${process.env.NODE_ENV}`);
+    });
+}
+
+// Export the app for external usage (e.g., testing)
+module.exports = app;
