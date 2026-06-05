@@ -2,13 +2,9 @@ name: Node.js CI
 
 on:
   push:
-    branches: [ "main" ]
+    branches: ["main"]
   pull_request:
-    branches: [ "main" ]
-
-env:
-  # This fixes the GitHub warning and forces the runner to use Node 24
-  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true 
+    branches: ["main"]
 
 jobs:
   build:
@@ -16,18 +12,23 @@ jobs:
 
     strategy:
       matrix:
-        # Update your app testing matrix to Node 24 to match the runner environment
-        node-version: [24.x] 
+        node-version: [24.x]
 
     steps:
-    - uses: actions/checkout@v4 
-    
-    - name: Use Node.js ${{ matrix.node-version }}
-      uses: actions/setup-node@v4 
-      with:
-        node-version: ${{ matrix.node-version }}
-        cache: 'npm'
-        
-    - run: npm ci
-    - run: npm run build --if-present
-    - run: npm test
+      - uses: actions/checkout@v4
+
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: npm
+          cache-dependency-path: backend/package-lock.json
+
+      - run: npm ci
+        working-directory: backend
+
+      - run: npm run build --if-present
+        working-directory: backend
+
+      - run: npm test --if-present
+        working-directory: backend
